@@ -1,0 +1,58 @@
+{"namespace": "com.refactorlabs.cs378.sessions",
+ "type": "record",
+ "name": "Session",
+ "fields": [
+      {"name": "user_id", "type": "string"},
+      {"name": "events",
+       "type": {"type": "array",
+                "items": {"type": "record",
+                          "name": "Event",
+                          "fields": [
+                              {"name": "event_type",
+                               "type": {"type": "enum",
+                                        "name": "EventType",
+                                        "symbols": [ "CHANGE", "CLICK", "DISPLAY",
+                                                     "EDIT", "SHOW", "SUBMIT", "VISIT" ]
+                                       }
+                               },
+                              {"name": "event_subtype",
+                               "type": {"type": "enum", 
+                                        "name": "EventSubtype",
+                                        "symbols": [ "ALTERNATIVE", "BADGE_DETAIL", 
+                                        "BADGES", "MARKET_REPORT" ]
+                                       }
+                              },
+                              {"name": "city", "type": "string" },
+                              {"name": "vin", "type": "string" },
+                              {"name": "vehicle_condition",
+                               "type": {"type": "enum",
+                                        "name": "VehicleCondition",
+                                        "symbols": [ "" ]
+                                       }
+                               }
+                              {"name": "year", "type": "int" },
+                              {"name": "make", "type": "string" },
+                              {"name": "model", "type": "string" },
+                              {"name": "trim", "type": "string" },
+                              {"name": "body_style",
+                               "type": {"type": "enum",
+                                        "name": "BodyStyle",
+                                        "symbols": [ "" ]
+                                       }
+                               },
+                               {"name": "cab_style",
+                               "type": {"type": "enum",
+                                        "name": "CabStyle",
+                                        "symbols": [ "" ]
+                                       }
+                               },
+                              {"name": "price", "type": "double" },
+                              {"name": "mileage", "type": "long" },
+                              {"name": "free_carfax_report", "type": "boolean" }
+                            ]
+                          }
+                }
+       }
+   ]
+ }
+
