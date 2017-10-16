@@ -14,45 +14,55 @@
                                         "symbols": [ "CHANGE", "CLICK", "DISPLAY",
                                                      "EDIT", "SHOW", "SUBMIT", "VISIT" ]
                                        }
-                               },
+                              },
                               {"name": "event_subtype",
                                "type": {"type": "enum", 
                                         "name": "EventSubtype",
-                                        "symbols": [ "ALTERNATIVE", "BADGE_DETAIL", 
-                                        "BADGES", "MARKET_REPORT" ]
+                                        "symbols": [ "CONTACT_FORM", "CONTACT_BANNER", "CONTACT_BUTTON", 
+                                                     "DEALER_PHONE", "FEATURES", "GET_DIRECTIONS", 
+                                                     "VEHICLE_HISTORY", "ALTERNATIVE", "BADGE_DETAIL", 
+                                                     "PHOTO_MODAL", "BADGES", "MARKET_REPORT" ]
                                        }
                               },
-                              {"name": "city", "type": "string" },
+                              {"name": "event_time", "type": "string"},
+                              {"name": "city", "type": [ "null", "string" ] },
                               {"name": "vin", "type": "string" },
-                              {"name": "vehicle_condition",
+                              {"name": "condition",
                                "type": {"type": "enum",
-                                        "name": "VehicleCondition",
-                                        "symbols": [ "" ]
+                                        "name": "Condition",
+                                        "symbols": [ "NEW", "USED" ]
                                        }
-                               }
+                              },
                               {"name": "year", "type": "int" },
                               {"name": "make", "type": "string" },
                               {"name": "model", "type": "string" },
-                              {"name": "trim", "type": "string" },
+                              {"name": "trim", "type": [ "null", "string" ] },
                               {"name": "body_style",
                                "type": {"type": "enum",
                                         "name": "BodyStyle",
-                                        "symbols": [ "" ]
+                                        "symbols": [ "CASSIS", "CONVERTIBLE", "COUPE",
+                                                     "HATCHBACK", "MINIVAN", "PICKUP",
+                                                     "SUV", "SEDAN", "VAN", "WAGON" ]
                                        }
-                               },
+                              },
                                {"name": "cab_style",
-                               "type": {"type": "enum",
-                                        "name": "CabStyle",
-                                        "symbols": [ "" ]
-                                       }
-                               },
+                                "type": [ "null", {"type": "enum",
+                                                   "name": "CabStyle",
+                                                   "symbols": [ "CREW", "EXTENDED", "REGULAR" ]
+                                                  } 
+                                        ]
+                              },
                               {"name": "price", "type": "double" },
                               {"name": "mileage", "type": "long" },
-                              {"name": "free_carfax_report", "type": "boolean" }
-                            ]
-                          }
-                }
-       }
-   ]
- }
-
+                              {"name": "free_carfax_report", "type": "boolean" },
+                              {"name": "features", 
+                               "type": {"type": "array", 
+                                        "items": "string"
+                                       }
+                              }
+                          ]
+                         }
+               }
+      }
+ ]
+}

@@ -19,17 +19,19 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
-/**
- * WordCount example using Avro defined class for the word count data,
- * to demonstrate how to use Avro defined objects.
- *
- * Here the reduce outputs (key and value) are both Avro objects, written as text.
- */
 public class UserSessions extends Configured implements Tool {
 
 	public static class MapClass extends Mapper<LongWritable, Text, Text, AvroValue<Session>> {
@@ -43,12 +45,13 @@ public class UserSessions extends Configured implements Tool {
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
 			String line = value.toString();
+			Session.Builder builder = Utils.createSession(line);
+			
+			word.set(builder.getUserId().toString());
+			context.write(word, new AvroValue<Session>(builder.build()));
+		}
 	}
 
-	/**
-	 * The Reduce class for word count.  Extends class Reducer, provided by Hadoop.
-	 * This class defines the reduce() function for the word count example.
-	 */
 	public static class ReduceClass
 			extends Reducer<Text, AvroValue<Session>,
 			                AvroKey<CharSequence>, AvroValue<Session>> {
@@ -56,6 +59,27 @@ public class UserSessions extends Configured implements Tool {
 		@Override
 		public void reduce(Text key, Iterable<AvroValue<Session>> values, Context context)
 				throws IOException, InterruptedException {
+
+			Set<Event> eventSet = new HashSet<>();
+			for (AvroValue<Session> value : values) {
+				for (Event event : value.datum().getEvents()) {
+					eventSet.add(event);
+				}
+			}
+
+			List<Event> eventList = new ArrayList<>(eventSet);
+			Collections.sort(eventList, new Comparator<Event>() {
+			    @Override
+			    public int compare(Event e1, Event e2) {
+			        return e1.getEventTime().toString().compareTo(e2.getEventTime().toString());
+			    }
+			});
+
+			Session.Builder builder = Session.newBuilder();
+			builder.setUserId(key.toString());
+			builder.setEvents(eventList);
+			context.write(new AvroKey<CharSequence>(key.toString()),
+					new AvroValue<Session>(builder.build()));
 		}
 	}
 
