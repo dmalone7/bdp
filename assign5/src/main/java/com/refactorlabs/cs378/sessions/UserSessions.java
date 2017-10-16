@@ -5,6 +5,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroKey;
 import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapreduce.AvroJob;
+import org.apache.avro.mapreduce.AvroKeyValueOutputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -107,6 +108,7 @@ public class UserSessions extends Configured implements Tool {
 		AvroJob.setMapOutputValueSchema(job, Session.getClassSchema());
 
 		// Specify the Reduce
+		// job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		job.setReducerClass(ReduceClass.class);
 		AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
