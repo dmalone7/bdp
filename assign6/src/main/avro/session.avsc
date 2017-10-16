@@ -1,0 +1,68 @@
+{"namespace": "com.refactorlabs.cs378.sessions",
+ "type": "record",
+ "name": "Session",
+ "fields": [
+      {"name": "user_id", "type": "string"},
+      {"name": "events",
+       "type": {"type": "array",
+                "items": {"type": "record",
+                          "name": "Event",
+                          "fields": [
+                              {"name": "event_type",
+                               "type": {"type": "enum",
+                                        "name": "EventType",
+                                        "symbols": [ "CHANGE", "CLICK", "DISPLAY",
+                                                     "EDIT", "SHOW", "SUBMIT", "VISIT" ]
+                                       }
+                              },
+                              {"name": "event_subtype",
+                               "type": {"type": "enum", 
+                                        "name": "EventSubtype",
+                                        "symbols": [ "CONTACT_FORM", "CONTACT_BANNER", "CONTACT_BUTTON", 
+                                                     "DEALER_PHONE", "FEATURES", "GET_DIRECTIONS", 
+                                                     "VEHICLE_HISTORY", "ALTERNATIVE", "BADGE_DETAIL", 
+                                                     "PHOTO_MODAL", "BADGES", "MARKET_REPORT" ]
+                                       }
+                              },
+                              {"name": "event_time", "type": "string"},
+                              {"name": "city", "type": [ "null", "string" ] },
+                              {"name": "vin", "type": "string" },
+                              {"name": "condition",
+                               "type": {"type": "enum",
+                                        "name": "Condition",
+                                        "symbols": [ "NEW", "USED" ]
+                                       }
+                              },
+                              {"name": "year", "type": "int" },
+                              {"name": "make", "type": "string" },
+                              {"name": "model", "type": "string" },
+                              {"name": "trim", "type": [ "null", "string" ] },
+                              {"name": "body_style",
+                               "type": {"type": "enum",
+                                        "name": "BodyStyle",
+                                        "symbols": [ "CASSIS", "CONVERTIBLE", "COUPE",
+                                                     "HATCHBACK", "MINIVAN", "PICKUP",
+                                                     "SUV", "SEDAN", "VAN", "WAGON" ]
+                                       }
+                              },
+                               {"name": "cab_style",
+                                "type": [ "null", {"type": "enum",
+                                                   "name": "CabStyle",
+                                                   "symbols": [ "CREW", "EXTENDED", "REGULAR" ]
+                                                  } 
+                                        ]
+                              },
+                              {"name": "price", "type": "double" },
+                              {"name": "mileage", "type": "long" },
+                              {"name": "free_carfax_report", "type": "boolean" },
+                              {"name": "features", 
+                               "type": {"type": "array", 
+                                        "items": "string"
+                                       }
+                              }
+                          ]
+                         }
+               }
+      }
+ ]
+}
