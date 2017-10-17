@@ -52,11 +52,9 @@ public class UserJoin extends Configured implements Tool {
 			Session userSession = value.datum();
 
 			for (Event event : userSession.getEvents()) {
-				if (map.containsKey(event.getVin().toString())) // if the key exists, don't overwrite the previous value
+				if (!map.containsKey(event.getVin().toString())) // if the key exists, don't overwrite the previous value
 					map.put(event.getVin().toString(), 0L);
 				if (event.getEventType() == EventType.CLICK) {
-					// more efficient to overwrite previous value, or check if exists?
-					// if (clickMap.containsKey(event.getVin().toString()))
 					clickMap.put(event.getEventSubtype().toString(), 1L);
 				}
 				else if (event.getEventType() == EventType.EDIT && event.getEventSubtype() == EventSubtype.CONTACT_FORM) {
@@ -109,21 +107,34 @@ public class UserJoin extends Configured implements Tool {
 			long editContactForm = 0;
 			long marketplaceSrps = 0;
 			long marketplaceVdps = 0;
+			Map<CharSequence, Long> clickMap = new HashMap<CharSequence, Long>(); 
 
 			for (AvroValue<VinImpressionCounts> value : values) {
 				uniqueUsers += value.datum().getUniqueUsers();
 				editContactForm += value.datum().getEditContactForm();
 				marketplaceSrps += value.datum().getMarketplaceSrps();
 				marketplaceVdps += value.datum().getMarketplaceVdps();
+
+				Map<CharSequence, Long> thisMap = value.datum().getClicks();
+				if (thisMap == null)
+					continue;
+
+				for (CharSequence click : thisMap.keySet()) {
+					if (clickMap.containsKey(click)) 
+						clickMap.put(click, clickMap.get(click) + value.datum().getClicks().get(click));
+					else 
+						clickMap.put(click, value.datum().getClicks().get(click));
+				}
 			}
 
-			// implement left side join, don't output if right side is empty
-			if (uniqueUsers == 0 && editContactForm == 0)
+			// implement left side join, don't output if left side is empty
+			if (uniqueUsers == 0)
 				return;
 
 			VinImpressionCounts.Builder builder = VinImpressionCounts.newBuilder();
 			builder.setUniqueUsers(uniqueUsers);
 			builder.setEditContactForm(editContactForm);
+			builder.setClicks(clickMap);
 			builder.setMarketplaceSrps(marketplaceSrps);
 			builder.setMarketplaceVdps(marketplaceVdps);
 			context.write(key, new AvroValue<VinImpressionCounts>(builder.build()));
@@ -135,7 +146,7 @@ public class UserJoin extends Configured implements Tool {
 	 * setup and configuration.
 	 */
 	public int run(String[] args) throws Exception {
-		if (args.length != 2 && args.length != 3) {
+		if (args.length != 4) {
 			System.err.println("Usage: UserJoin <input path> <input path> <input path> <output path>");
 			return -1;
 		}
