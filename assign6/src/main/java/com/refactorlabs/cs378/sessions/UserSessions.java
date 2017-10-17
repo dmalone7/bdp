@@ -1,6 +1,6 @@
 package com.refactorlabs.cs378.sessions;
 
-import com.refactorlabs.cs378.utils.Utils;
+import com.refactorlabs.cs378.utils.*;
 import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroKey;
 import org.apache.avro.mapred.AvroValue;
@@ -46,7 +46,7 @@ public class UserSessions extends Configured implements Tool {
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
 			String line = value.toString();
-			Session.Builder builder = Utils.createSession(line);
+			Session.Builder builder = SessionsUtils.createSession(line);
 			
 			word.set(builder.getUserId().toString());
 			context.write(word, new AvroValue<Session>(builder.build()));
@@ -108,8 +108,8 @@ public class UserSessions extends Configured implements Tool {
 		AvroJob.setMapOutputValueSchema(job, Session.getClassSchema());
 
 		// Specify the Reduce
-		// job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+		// job.setOutputFormatClass(TextOutputFormat.class);
 		job.setReducerClass(ReduceClass.class);
 		AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
 		AvroJob.setOutputValueSchema(job, Session.getClassSchema());

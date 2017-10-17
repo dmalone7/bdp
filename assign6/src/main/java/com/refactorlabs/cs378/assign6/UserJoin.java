@@ -34,6 +34,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 public class UserJoin extends Configured implements Tool {
 
@@ -46,28 +48,29 @@ public class UserJoin extends Configured implements Tool {
 		public void map(AvroKey<CharSequence> key, AvroValue<Session> value, Context context)
 				throws IOException, InterruptedException {
 
-			Map<String, Long> map = new HashMap<String, Long>();
+			Set<String> vinSet = new HashSet<String>();
+			Map<String, Long> contactMap = new HashMap<String, Long>();
 			Map<CharSequence, Long> clickMap = new HashMap<CharSequence, Long>();
 
 			Session userSession = value.datum();
 
 			for (Event event : userSession.getEvents()) {
-				if (!map.containsKey(event.getVin().toString())) // if the key exists, don't overwrite the previous value
-					map.put(event.getVin().toString(), 0L);
+				vinSet.add(event.getVin().toString());
 				if (event.getEventType() == EventType.CLICK) {
 					clickMap.put(event.getEventSubtype().toString(), 1L);
 				}
-				else if (event.getEventType() == EventType.EDIT && event.getEventSubtype() == EventSubtype.CONTACT_FORM) {
-					map.put(event.getVin().toString(), 1L);
+				if (event.getEventType() == EventType.EDIT && event.getEventSubtype() == EventSubtype.CONTACT_FORM) {
+					contactMap.put(event.getVin().toString(), 1L);
 				}
 			}
 
-			for (String vin : map.keySet()) {
+			for (String vin : vinSet) {
 				word.set(vin);
 				VinImpressionCounts.Builder builder = VinImpressionCounts.newBuilder();
 				builder.setUniqueUsers(1L); 			  // setUniqueUsers(Long value) set to 1 from mapper
 				builder.setClicks(clickMap); 			  // setClicks(Map<java.lang.CharSequence, Long> value)
-				builder.setEditContactForm(map.get(vin)); // setEditContactForm(Long value)
+				if (contactMap.containsKey(vin))
+					builder.setEditContactForm(contactMap.get(vin)); // setEditContactForm(Long value)
 				context.write(word, new AvroValue<VinImpressionCounts>(builder.build()));
 			}
 		}
@@ -95,7 +98,6 @@ public class UserJoin extends Configured implements Tool {
 			context.write(word, new AvroValue<VinImpressionCounts>(builder.build()));
 		}
 	}
-
 
 	public static class ReduceClass extends Reducer<Text, AvroValue<VinImpressionCounts>, Text, AvroValue<VinImpressionCounts>> {
 
