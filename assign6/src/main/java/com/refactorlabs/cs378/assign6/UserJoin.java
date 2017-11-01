@@ -40,7 +40,8 @@ import java.util.HashSet;
 public class UserJoin extends Configured implements Tool {
 
 	// read input from user sessions files
-	public static class UserSessionsMapper extends Mapper<AvroKey<CharSequence>, AvroValue<Session>, Text, AvroValue<VinImpressionCounts>> {
+	public static class UserSessionsMapper extends Mapper<AvroKey<CharSequence>, AvroValue<Session>, 
+														  Text, AvroValue<VinImpressionCounts>> {
 
 		private Text word = new Text();
 
@@ -123,9 +124,9 @@ public class UserJoin extends Configured implements Tool {
 
 				for (CharSequence click : thisMap.keySet()) {
 					if (clickMap.containsKey(click)) 
-						clickMap.put(click, clickMap.get(click) + value.datum().getClicks().get(click));
+						clickMap.put(click, clickMap.get(click) + thisMap.get(click));
 					else 
-						clickMap.put(click, value.datum().getClicks().get(click));
+						clickMap.put(click, thisMap.get(click));
 				}
 			}
 

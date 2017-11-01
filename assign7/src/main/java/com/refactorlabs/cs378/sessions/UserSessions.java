@@ -108,8 +108,8 @@ public class UserSessions extends Configured implements Tool {
 		AvroJob.setMapOutputValueSchema(job, Session.getClassSchema());
 
 		// Specify the Reduce
-		// job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+		// job.setOutputFormatClass(TextOutputFormat.class);
 		job.setReducerClass(ReduceClass.class);
 		AvroJob.setOutputKeySchema(job, Schema.create(Schema.Type.STRING));
 		AvroJob.setOutputValueSchema(job, Session.getClassSchema());

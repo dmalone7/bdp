@@ -7,7 +7,7 @@ package com.refactorlabs.cs378.sessions;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Event extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Event\",\"namespace\":\"com.refactorlabs.cs378.sessions\",\"fields\":[{\"name\":\"event_type\",\"type\":{\"type\":\"enum\",\"name\":\"EventType\",\"symbols\":[\"CHANGE\",\"CLICK\",\"DISPLAY\",\"EDIT\",\"SHOW\",\"SUBMIT\",\"VISIT\"]}},{\"name\":\"event_subtype\",\"type\":{\"type\":\"enum\",\"name\":\"EventSubtype\",\"symbols\":[\"CONTACT_FORM\",\"CONTACT_BANNER\",\"CONTACT_BUTTON\",\"DEALER_PHONE\",\"FEATURES\",\"GET_DIRECTIONS\",\"VEHICLE_HISTORY\",\"ALTERNATIVE\",\"BADGE_DETAIL\",\"PHOTO_MODAL\",\"BADGES\",\"MARKET_REPORT\"]}},{\"name\":\"event_time\",\"type\":\"string\"},{\"name\":\"city\",\"type\":[\"null\",\"string\"]},{\"name\":\"vin\",\"type\":\"string\"},{\"name\":\"condition\",\"type\":{\"type\":\"enum\",\"name\":\"Condition\",\"symbols\":[\"NEW\",\"USED\"]}},{\"name\":\"year\",\"type\":\"int\"},{\"name\":\"make\",\"type\":\"string\"},{\"name\":\"model\",\"type\":\"string\"},{\"name\":\"trim\",\"type\":[\"null\",\"string\"]},{\"name\":\"body_style\",\"type\":{\"type\":\"enum\",\"name\":\"BodyStyle\",\"symbols\":[\"CASSIS\",\"CONVERTIBLE\",\"COUPE\",\"HATCHBACK\",\"MINIVAN\",\"PICKUP\",\"SUV\",\"SEDAN\",\"VAN\",\"WAGON\"]}},{\"name\":\"cab_style\",\"type\":[\"null\",{\"type\":\"enum\",\"name\":\"CabStyle\",\"symbols\":[\"CREW\",\"EXTENDED\",\"REGULAR\"]}]},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"mileage\",\"type\":\"long\"},{\"name\":\"free_carfax_report\",\"type\":\"boolean\"},{\"name\":\"features\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Event\",\"namespace\":\"com.refactorlabs.cs378.sessions\",\"fields\":[{\"name\":\"event_type\",\"type\":{\"type\":\"enum\",\"name\":\"EventType\",\"symbols\":[\"CHANGE\",\"CLICK\",\"DISPLAY\",\"EDIT\",\"SHOW\",\"SUBMIT\",\"VISIT\"]}},{\"name\":\"event_subtype\",\"type\":{\"type\":\"enum\",\"name\":\"EventSubtype\",\"symbols\":[\"ALTERNATIVE\",\"BADGES\",\"BADGE_DETAIL\",\"CONTACT_BANNER\",\"CONTACT_BUTTON\",\"CONTACT_FORM\",\"DEALER_PHONE\",\"FEATURES\",\"GET_DIRECTIONS\",\"MARKET_REPORT\",\"PHOTO_MODAL\",\"VEHICLE_HISTORY\"]}},{\"name\":\"event_time\",\"type\":\"string\"},{\"name\":\"city\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"vin\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"condition\",\"type\":{\"type\":\"enum\",\"name\":\"Condition\",\"symbols\":[\"New\",\"Used\",\"CPO\"]},\"default\":\"Used\"},{\"name\":\"year\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"make\",\"type\":\"string\"},{\"name\":\"model\",\"type\":\"string\"},{\"name\":\"trim\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"body_style\",\"type\":[\"null\",{\"type\":\"enum\",\"name\":\"BodyStyle\",\"symbols\":[\"Chassis\",\"Convertible\",\"Coupe\",\"Hatchback\",\"Minivan\",\"Pickup\",\"SUV\",\"Sedan\",\"Van\",\"Wagon\"]}],\"default\":null},{\"name\":\"cab_style\",\"type\":[\"null\",{\"type\":\"enum\",\"name\":\"CabStyle\",\"symbols\":[\"Regular\",\"Extended\",\"Crew\"]}],\"default\":null},{\"name\":\"price\",\"type\":[\"null\",\"float\"],\"default\":null},{\"name\":\"mileage\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"free_carfax_report\",\"type\":\"boolean\",\"default\":false},{\"name\":\"features\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public com.refactorlabs.cs378.sessions.EventType event_type;
   @Deprecated public com.refactorlabs.cs378.sessions.EventSubtype event_subtype;
@@ -15,14 +15,14 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
   @Deprecated public java.lang.CharSequence city;
   @Deprecated public java.lang.CharSequence vin;
   @Deprecated public com.refactorlabs.cs378.sessions.Condition condition;
-  @Deprecated public int year;
+  @Deprecated public java.lang.Integer year;
   @Deprecated public java.lang.CharSequence make;
   @Deprecated public java.lang.CharSequence model;
   @Deprecated public java.lang.CharSequence trim;
   @Deprecated public com.refactorlabs.cs378.sessions.BodyStyle body_style;
   @Deprecated public com.refactorlabs.cs378.sessions.CabStyle cab_style;
-  @Deprecated public double price;
-  @Deprecated public long mileage;
+  @Deprecated public java.lang.Float price;
+  @Deprecated public java.lang.Integer mileage;
   @Deprecated public boolean free_carfax_report;
   @Deprecated public java.util.List<java.lang.CharSequence> features;
 
@@ -34,7 +34,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
   /**
    * All-args constructor.
    */
-  public Event(com.refactorlabs.cs378.sessions.EventType event_type, com.refactorlabs.cs378.sessions.EventSubtype event_subtype, java.lang.CharSequence event_time, java.lang.CharSequence city, java.lang.CharSequence vin, com.refactorlabs.cs378.sessions.Condition condition, java.lang.Integer year, java.lang.CharSequence make, java.lang.CharSequence model, java.lang.CharSequence trim, com.refactorlabs.cs378.sessions.BodyStyle body_style, com.refactorlabs.cs378.sessions.CabStyle cab_style, java.lang.Double price, java.lang.Long mileage, java.lang.Boolean free_carfax_report, java.util.List<java.lang.CharSequence> features) {
+  public Event(com.refactorlabs.cs378.sessions.EventType event_type, com.refactorlabs.cs378.sessions.EventSubtype event_subtype, java.lang.CharSequence event_time, java.lang.CharSequence city, java.lang.CharSequence vin, com.refactorlabs.cs378.sessions.Condition condition, java.lang.Integer year, java.lang.CharSequence make, java.lang.CharSequence model, java.lang.CharSequence trim, com.refactorlabs.cs378.sessions.BodyStyle body_style, com.refactorlabs.cs378.sessions.CabStyle cab_style, java.lang.Float price, java.lang.Integer mileage, java.lang.Boolean free_carfax_report, java.util.List<java.lang.CharSequence> features) {
     this.event_type = event_type;
     this.event_subtype = event_subtype;
     this.event_time = event_time;
@@ -92,8 +92,8 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     case 9: trim = (java.lang.CharSequence)value$; break;
     case 10: body_style = (com.refactorlabs.cs378.sessions.BodyStyle)value$; break;
     case 11: cab_style = (com.refactorlabs.cs378.sessions.CabStyle)value$; break;
-    case 12: price = (java.lang.Double)value$; break;
-    case 13: mileage = (java.lang.Long)value$; break;
+    case 12: price = (java.lang.Float)value$; break;
+    case 13: mileage = (java.lang.Integer)value$; break;
     case 14: free_carfax_report = (java.lang.Boolean)value$; break;
     case 15: features = (java.util.List<java.lang.CharSequence>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -283,7 +283,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
   /**
    * Gets the value of the 'price' field.
    */
-  public java.lang.Double getPrice() {
+  public java.lang.Float getPrice() {
     return price;
   }
 
@@ -291,14 +291,14 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
    * Sets the value of the 'price' field.
    * @param value the value to set.
    */
-  public void setPrice(java.lang.Double value) {
+  public void setPrice(java.lang.Float value) {
     this.price = value;
   }
 
   /**
    * Gets the value of the 'mileage' field.
    */
-  public java.lang.Long getMileage() {
+  public java.lang.Integer getMileage() {
     return mileage;
   }
 
@@ -306,7 +306,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
    * Sets the value of the 'mileage' field.
    * @param value the value to set.
    */
-  public void setMileage(java.lang.Long value) {
+  public void setMileage(java.lang.Integer value) {
     this.mileage = value;
   }
 
@@ -367,14 +367,14 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     private java.lang.CharSequence city;
     private java.lang.CharSequence vin;
     private com.refactorlabs.cs378.sessions.Condition condition;
-    private int year;
+    private java.lang.Integer year;
     private java.lang.CharSequence make;
     private java.lang.CharSequence model;
     private java.lang.CharSequence trim;
     private com.refactorlabs.cs378.sessions.BodyStyle body_style;
     private com.refactorlabs.cs378.sessions.CabStyle cab_style;
-    private double price;
-    private long mileage;
+    private java.lang.Float price;
+    private java.lang.Integer mileage;
     private boolean free_carfax_report;
     private java.util.List<java.lang.CharSequence> features;
 
@@ -613,7 +613,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     }
     
     /** Sets the value of the 'year' field */
-    public com.refactorlabs.cs378.sessions.Event.Builder setYear(int value) {
+    public com.refactorlabs.cs378.sessions.Event.Builder setYear(java.lang.Integer value) {
       validate(fields()[6], value);
       this.year = value;
       fieldSetFlags()[6] = true;
@@ -627,6 +627,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     
     /** Clears the value of the 'year' field */
     public com.refactorlabs.cs378.sessions.Event.Builder clearYear() {
+      year = null;
       fieldSetFlags()[6] = false;
       return this;
     }
@@ -757,12 +758,12 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     }
 
     /** Gets the value of the 'price' field */
-    public java.lang.Double getPrice() {
+    public java.lang.Float getPrice() {
       return price;
     }
     
     /** Sets the value of the 'price' field */
-    public com.refactorlabs.cs378.sessions.Event.Builder setPrice(double value) {
+    public com.refactorlabs.cs378.sessions.Event.Builder setPrice(java.lang.Float value) {
       validate(fields()[12], value);
       this.price = value;
       fieldSetFlags()[12] = true;
@@ -776,17 +777,18 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     
     /** Clears the value of the 'price' field */
     public com.refactorlabs.cs378.sessions.Event.Builder clearPrice() {
+      price = null;
       fieldSetFlags()[12] = false;
       return this;
     }
 
     /** Gets the value of the 'mileage' field */
-    public java.lang.Long getMileage() {
+    public java.lang.Integer getMileage() {
       return mileage;
     }
     
     /** Sets the value of the 'mileage' field */
-    public com.refactorlabs.cs378.sessions.Event.Builder setMileage(long value) {
+    public com.refactorlabs.cs378.sessions.Event.Builder setMileage(java.lang.Integer value) {
       validate(fields()[13], value);
       this.mileage = value;
       fieldSetFlags()[13] = true;
@@ -800,6 +802,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     
     /** Clears the value of the 'mileage' field */
     public com.refactorlabs.cs378.sessions.Event.Builder clearMileage() {
+      mileage = null;
       fieldSetFlags()[13] = false;
       return this;
     }
@@ -869,8 +872,8 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
         record.trim = fieldSetFlags()[9] ? this.trim : (java.lang.CharSequence) defaultValue(fields()[9]);
         record.body_style = fieldSetFlags()[10] ? this.body_style : (com.refactorlabs.cs378.sessions.BodyStyle) defaultValue(fields()[10]);
         record.cab_style = fieldSetFlags()[11] ? this.cab_style : (com.refactorlabs.cs378.sessions.CabStyle) defaultValue(fields()[11]);
-        record.price = fieldSetFlags()[12] ? this.price : (java.lang.Double) defaultValue(fields()[12]);
-        record.mileage = fieldSetFlags()[13] ? this.mileage : (java.lang.Long) defaultValue(fields()[13]);
+        record.price = fieldSetFlags()[12] ? this.price : (java.lang.Float) defaultValue(fields()[12]);
+        record.mileage = fieldSetFlags()[13] ? this.mileage : (java.lang.Integer) defaultValue(fields()[13]);
         record.free_carfax_report = fieldSetFlags()[14] ? this.free_carfax_report : (java.lang.Boolean) defaultValue(fields()[14]);
         record.features = fieldSetFlags()[15] ? this.features : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[15]);
         return record;
