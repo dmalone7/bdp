@@ -17,6 +17,7 @@ public class Utils {
 	 * Counter groups.  Individual counters are organized into these groups.
 	 */
 	public static final String MAPPER_COUNTER_GROUP = "Mapper Counts";
+	public static final String REDUCER_COUNTER_GROUP = "Reducer Counts";
 
 	public static final long ONE = 1L;
 	public final static LongWritable WRITABLE_ONE = new LongWritable(ONE);
