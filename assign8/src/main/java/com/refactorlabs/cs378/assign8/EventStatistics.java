@@ -30,8 +30,11 @@ import com.refactorlabs.cs378.sessions.*;
 import com.refactorlabs.cs378.utils.*;
 
 public class EventStatistics extends Configured implements Tool {
+	/********************************
+	 ********* MAP CLASSES **********
+	 ********************************/
 
-	// read input from user sessions files
+	// bins user sessions by event type
 	public static class BinMapClass extends Mapper<AvroKey<CharSequence>, AvroValue<Session>, 
 						AvroKey<CharSequence>, AvroValue<Session>> {
 
@@ -76,16 +79,17 @@ public class EventStatistics extends Configured implements Tool {
 				return;
 			}
 
+			// output set on what type of event type was found, preference given to submitter, etc.
 			if (category[0]) 
-				output.write(SessionType.SUBMITTER.getText(), key, value);
+				output.write(SessionType.SUBMITTER.getText(), new AvroKey<CharSequence>(SessionType.SUBMITTER.getText()), value);
 			else if (category[1]) 
-				output.write(SessionType.CLICKER.getText(), key, value);
+				output.write(SessionType.CLICKER.getText(), new AvroKey<CharSequence>(SessionType.CLICKER.getText()), value);
 			else if (category[2]) 
-				output.write(SessionType.SHOWER.getText(), key, value);
+				output.write(SessionType.SHOWER.getText(), new AvroKey<CharSequence>(SessionType.SHOWER.getText()), value);
 			else if (category[3]) 
-				output.write(SessionType.VISITOR.getText(), key, value);
+				output.write(SessionType.VISITOR.getText(), new AvroKey<CharSequence>(SessionType.VISITOR.getText()), value);
 			else 
-				output.write(SessionType.OTHER.getText(), key, value);
+				output.write(SessionType.OTHER.getText(), new AvroKey<CharSequence>(SessionType.OTHER.getText()), value);
 
 			context.getCounter(Utils.MAPPER_COUNTER_GROUP, "input sessions").increment(1L);
 		}
@@ -100,20 +104,21 @@ public class EventStatistics extends Configured implements Tool {
 			HashMap<String, Long> countMap = new HashMap<>();
 			Session userSession = value.datum();
 
-			for (Event event : userSession.getEvents()) {
-				// EventType thisType = event.getEventType();
-				String thisSubtype = event.getEventSubtype().toString().toUpperCase();
-
-				if (countMap.containsKey(thisSubtype))
-					countMap.put(thisSubtype, countMap.get(thisSubtype) + 1L);
-				else	
-					countMap.put(thisSubtype, 1L);
+			// initiates 0 count for all event subtypes
+			for(EventSubtype subType : EventSubtype.values()) {
+				countMap.put(subType.toString().toUpperCase(), 0L);
 			}
 
-			EventSubtypeStatisticsKey.Builder keyBuilder = EventSubtypeStatisticsKey.newBuilder();
-			keyBuilder.setSessionType(key.toString()); // will this work?
-			
+			// increments for existing event subtypes
+			for (Event event : userSession.getEvents()) {
+				String thisSubtype = event.getEventSubtype().toString().toUpperCase();
+				countMap.put(thisSubtype, countMap.get(thisSubtype) + 1L);
+			}
+
+			// output statistics for event type/subtype key
 			for(String event : countMap.keySet()) {
+				EventSubtypeStatisticsKey.Builder keyBuilder = EventSubtypeStatisticsKey.newBuilder();
+				keyBuilder.setSessionType(key.toString().toUpperCase()); 
 				keyBuilder.setEventSubtype(event);
 
 				long count = countMap.get(event);
@@ -142,6 +147,11 @@ public class EventStatistics extends Configured implements Tool {
 		}
 	}
 
+	/********************************
+	 ******** REDUCE CLASSES ********
+	 ********************************/
+
+	// calculate statistics for each Type/Subtype key
 	public static class SumReducer extends Reducer<AvroKey<EventSubtypeStatisticsKey>, AvroValue<EventSubtypeStatisticsData>, 
 						AvroKey<EventSubtypeStatisticsKey>, AvroValue<EventSubtypeStatisticsData>> {
 
@@ -235,12 +245,13 @@ public class EventStatistics extends Configured implements Tool {
 		// Initiate the map-reduce job, and wait for completion.
 		job.waitForCompletion(true);
 
+		// create parallel jobs with input from binning mapper output files.  output to own directories
 		Job clickerJob = parallelJob(appArgs[1]+"/clicker-m-*.avro", appArgs[1]+"/visitor-output", conf);
 		Job showerJob = parallelJob(appArgs[1]+"/shower-m-*.avro", appArgs[1]+"/click-output", conf);
 		Job submitterJob = parallelJob(appArgs[1]+"/submitter-m-*.avro", appArgs[1]+"/submitter-output", conf);
 		Job visitorJob = parallelJob(appArgs[1]+"/visitor-m-*.avro", appArgs[1]+"/shower-output", conf);
 
-		// maybe change to while loop
+		// wait for all jobs to complete, polling ever .1 seconds
 		while (( submitterJob.isComplete() && 
 				 clickerJob.isComplete() &&
 				 showerJob.isComplete() &&
@@ -248,55 +259,58 @@ public class EventStatistics extends Configured implements Tool {
 			Thread.sleep(100);
 		}
 
-		/************************************
-		********* IGNORE PAST THIS **********
-		************************************/
+		// final aggregate mapper/reducer
+		Job finalJob = Job.getInstance(conf, "AggregateStatistics");
 
-		Job aggregateClickStatsJob = Job.getInstance(conf, "AggregateSubeventStats");
-		aggregateClickStatsJob.setJarByClass(EventStatistics.class);
-		aggregateClickStatsJob.setInputFormatClass(AvroKeyValueInputFormat.class);
-		aggregateClickStatsJob.setMapperClass(MapClass.class);
-		AvroJob.setInputKeySchema(aggregateClickStatsJob, EventSubtypeStatisticsKey.getClassSchema());
-		AvroJob.setInputValueSchema(aggregateClickStatsJob, EventSubtypeStatisticsData.getClassSchema());
-		AvroJob.setMapOutputKeySchema(aggregateClickStatsJob, EventSubtypeStatisticsKey.getClassSchema());
-		AvroJob.setMapOutputValueSchema(aggregateClickStatsJob, EventSubtypeStatisticsData.getClassSchema());
+		finalJob.setJarByClass(EventStatistics.class);
 
-		aggregateClickStatsJob.setReducerClass(ReducerClass.class);
-		AvroJob.setOutputKeySchema(aggregateClickStatsJob, EventSubtypeStatisticsKey.getClassSchema());
-		AvroJob.setOutputValueSchema(aggregateClickStatsJob, EventSubtypeStatisticsData.getClassSchema());
-		aggregateClickStatsJob.setOutputFormatClass(TextOutputFormat.class);
-		aggregateClickStatsJob.setNumReduceTasks(1);
+		finalJob.setInputFormatClass(AvroKeyValueInputFormat.class);
+		finalJob.setMapperClass(MapClass.class);
+		AvroJob.setInputKeySchema(finalJob, EventSubtypeStatisticsKey.getClassSchema());
+		AvroJob.setInputValueSchema(finalJob, EventSubtypeStatisticsData.getClassSchema());
+		AvroJob.setMapOutputKeySchema(finalJob, EventSubtypeStatisticsKey.getClassSchema());
+		AvroJob.setMapOutputValueSchema(finalJob, EventSubtypeStatisticsData.getClassSchema());
 
-		FileInputFormat.addInputPaths(aggregateClickStatsJob, appArgs[1]+"/visitor-output/part-r-*.avro");
-		FileInputFormat.addInputPaths(aggregateClickStatsJob, appArgs[1]+"/click-output/part-r-*.avro");
-		FileInputFormat.addInputPaths(aggregateClickStatsJob, appArgs[1]+"/submitter-output/part-r-*.avro");
-		FileInputFormat.addInputPaths(aggregateClickStatsJob, appArgs[1]+"/shower-output/part-r-*.avro");
-		FileOutputFormat.setOutputPath(aggregateClickStatsJob, new Path(appArgs[1] + "/final-output"));
+		finalJob.setReducerClass(ReducerClass.class);
+		AvroJob.setOutputKeySchema(finalJob, EventSubtypeStatisticsKey.getClassSchema());
+		AvroJob.setOutputValueSchema(finalJob, EventSubtypeStatisticsData.getClassSchema());
+		finalJob.setOutputFormatClass(TextOutputFormat.class);
+		finalJob.setNumReduceTasks(1);
 
-		aggregateClickStatsJob.waitForCompletion(true);
+		FileInputFormat.addInputPaths(finalJob, appArgs[1]+"/visitor-output/part-r-*.avro");
+		FileInputFormat.addInputPaths(finalJob, appArgs[1]+"/click-output/part-r-*.avro");
+		FileInputFormat.addInputPaths(finalJob, appArgs[1]+"/submitter-output/part-r-*.avro");
+		FileInputFormat.addInputPaths(finalJob, appArgs[1]+"/shower-output/part-r-*.avro");
+
+		FileOutputFormat.setOutputPath(finalJob, new Path(appArgs[1] + "/final-output"));
+
+		finalJob.waitForCompletion(true);
 
 		return 0;
 	}
 
+	// refactored parallel jobs
 	public Job parallelJob(String input, String output, Configuration conf) 
 					throws IOException, InterruptedException, ClassNotFoundException {
 		Path inputPath = new Path(input);
 		Path outputPath = new Path(output);
 
 		Job job = Job.getInstance(conf, output);
+
 		// Identify the JAR file to replicate to all machines.
 		job.setJarByClass(EventStatistics.class);
+
 		// Specify the Map through input
 		job.setInputFormatClass(AvroKeyValueInputFormat.class);
-		job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
-
 		job.setMapperClass(ParallelMapClass.class);
-		job.setReducerClass(SumReducer.class);
-
 		AvroJob.setInputKeySchema(job, Schema.create(Schema.Type.STRING));
 		AvroJob.setInputValueSchema(job, Session.getClassSchema());
 		AvroJob.setMapOutputKeySchema(job, EventSubtypeStatisticsKey.getClassSchema());
 		AvroJob.setMapOutputValueSchema(job, EventSubtypeStatisticsData.getClassSchema());
+
+		// Specify the Reducer
+		job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+		job.setReducerClass(SumReducer.class);
 		AvroJob.setOutputKeySchema(job, EventSubtypeStatisticsKey.getClassSchema());
 		AvroJob.setOutputValueSchema(job, EventSubtypeStatisticsData.getClassSchema());
 
